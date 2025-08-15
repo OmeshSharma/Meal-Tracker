@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mealtracker | View Log</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+<header>
+  <h1>Mealtracker</h1>
+  <div class="nav-links">
+    <a href="{{ url_for('main.index') }}">Home</a>
+    <a href="{{ url_for('main.add_food') }}">Add Meal</a>
+  </div>
+</header>
+
+<div class="container">
+  <h3>{{ log.date.strftime('%B %d, %Y') }}</h3>
+
+  <form action="{{ url_for('main.view_log', log_id=log.id) }}" method="POST">
+    <label>Add Meal</label>
+    <select name="food-select">
+      {% for food in foods %}
+      <option value="{{ food.id }}">{{ food.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Add</button>
+  </form>
+
+  {% if suggestion %}
+  <div class="suggestion-box">
+    💡 <strong>Nutrition Tip:</strong> {{ suggestion }}
+  </div>
+  {% endif %}
+
+  <h4>Total Summary</h4>
+  <p><strong>Protein:</strong> {{ totals['proteins'] }}g</p>
+  <p><strong>Carbs:</strong> {{ totals['carbs'] }}g</p>
+  <p><strong>Fat:</strong> {{ totals['fats'] }}g</p>
+  <p><strong>Calories:</strong> {{ totals['calories'] }} kcal</p>
+
+  <h4>Meals on this day</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Protein</th>
+        <th>Carbs</th>
+        <th>Fat</th>
+        <th>Calories</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for food in log.foods %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ food.name }}</td>
+        <td>{{ food.proteins }}</td>
+        <td>{{ food.carbs }}</td>
+        <td>{{ food.fats }}</td>
+        <td>{{ food.calories }}</td>
+        <td>
+          <a href="{{ url_for('main.remove_food_from_log', log_id=log.id, food_id=food.id) }}">Remove</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  © {{ datetime.utcnow().year }} Mealtracker
+</footer>
+</body>
+</html>
